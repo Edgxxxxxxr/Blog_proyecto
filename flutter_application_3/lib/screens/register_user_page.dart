@@ -208,7 +208,7 @@ class _RegisterPageState
                 const SizedBox(height: 15),
 
                 DropdownButtonFormField<int>(
-                  value: tipoUsuario,
+                  initialValue: tipoUsuario,
                   decoration: const InputDecoration(labelText: 'Tipo de usuario'),
                   items: const [
                     DropdownMenuItem(value: 1, child: Text('Administrador')),
