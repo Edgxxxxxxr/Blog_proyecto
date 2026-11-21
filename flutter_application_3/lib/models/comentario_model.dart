@@ -1,3 +1,6 @@
+/// Archivo: comentario_model.dart.
+/// Representa un comentario y define su conversión con la API.
+
 class ComentarioModel {
   final int id;
   final String comentario;
@@ -6,6 +9,7 @@ class ComentarioModel {
   final int usuarioId;
   final int blogId;
 
+  /// Construye un comentario con sus identificadores y fecha de publicación.
   ComentarioModel({
     required this.id,
     required this.comentario,
@@ -26,6 +30,7 @@ class ComentarioModel {
     );
   }
 
+  /// Convierte los datos del modelo al formato JSON que espera la API.
   Map<String, dynamic> toJsonCrear() {
     return {
       'comentario': comentario,

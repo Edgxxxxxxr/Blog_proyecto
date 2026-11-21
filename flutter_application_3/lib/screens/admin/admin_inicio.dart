@@ -1,3 +1,6 @@
+/// Archivo: admin_inicio.dart.
+/// Reúne las tarjetas y datos resumidos que aparecen en el inicio administrativo.
+
 // World of Movies: Tarjetas y contadores de la pantalla inicial.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -9,6 +12,7 @@ mixin _AdminInicio on _AdminDashboardBase {
   // =====================================
 
   // Construye la pantalla inicial con sus contadores.
+  /// Construye tarjetas de métricas y accesos principales del administrador.
   @override
   Widget inicio() {
     // Crea el componente ListView de la interfaz.

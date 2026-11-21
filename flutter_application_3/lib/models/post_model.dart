@@ -1,3 +1,6 @@
+/// Archivo: post_model.dart.
+/// Representa una publicación y convierte los campos de respuesta del blog.
+
 class PostModel {
   final int id;
   final String titulo;
@@ -5,6 +8,7 @@ class PostModel {
   final String imagen;
   final String tags;
 
+  /// Construye una publicación local con los campos devueltos por la API.
   const PostModel({
     required this.id,
     required this.titulo,

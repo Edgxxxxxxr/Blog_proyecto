@@ -1,3 +1,6 @@
+/// Archivo: admin_usuarios_page.dart.
+/// Lista las cuentas registradas y conecta las acciones de administración.
+
 // World of Movies: Listado y acciones sobre usuarios.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -9,6 +12,7 @@ mixin _AdminUsuarios on _AdminDashboardBase {
   // =====================================
 
   // Construye el listado de usuarios con búsqueda y acciones.
+  /// Construye el listado administrativo de cuentas y sus acciones.
   @override
   Widget pantallaUsuarios() {
     // Filtra por nombre y correo.

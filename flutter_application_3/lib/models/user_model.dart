@@ -1,3 +1,6 @@
+/// Archivo: user_model.dart.
+/// Representa una cuenta y serializa los datos que acepta el backend.
+
 class UserModel {
   final int id;
   final String nombre;
@@ -6,6 +9,7 @@ class UserModel {
   final String? direccion;
   final int tipoUsuario;
 
+  /// Construye el modelo de cuenta con los campos recibidos desde la API.
   UserModel({
     required this.id,
     required this.nombre,
@@ -25,6 +29,7 @@ class UserModel {
     );
   }
 
+  /// Convierte los datos del modelo al formato JSON que espera la API.
   Map<String, dynamic> toJsonCrear() {
     return {
       'nom_usr': nombre,

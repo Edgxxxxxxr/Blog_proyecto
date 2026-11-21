@@ -1,3 +1,6 @@
+/// Archivo: admin_usuario_form.dart.
+/// Construye y valida el formulario para crear o actualizar una cuenta.
+
 // World of Movies: Formularios de alta y edición de usuarios.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -9,6 +12,7 @@ mixin _AdminUsuarioForm on _AdminDashboardBase {
   // =====================================
 
   // Abre el formulario de registro o edición de usuarios.
+  /// Carga o inicializa los campos y envía el alta o edición de la cuenta.
   @override
   Future<void> formularioUsuario([Map<String, dynamic>? usuario]) async {
     // Indica si el usuario ya existe.

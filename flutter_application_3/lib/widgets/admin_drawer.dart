@@ -1,18 +1,26 @@
+/// Archivo: admin_drawer.dart.
+/// Construye el menú lateral reutilizable de administración y su navegación.
+
 import 'package:flutter/material.dart';
 
+/// Construye el menú lateral que lleva a cada área administrativa.
 class AdminDrawer extends StatelessWidget {
   final Map<String, dynamic> usuario;
   final String rutaActual;
 
+  /// Crea el componente AdminDrawer con los valores que necesita para funcionar.
   const AdminDrawer({
     super.key,
     required this.usuario,
     required this.rutaActual,
   });
 
+  /// Devuelve el valor calculado de nombre para la interfaz.
   String get nombre => usuario['nom_usr']?.toString() ?? 'Administrador';
+  /// Devuelve el valor calculado de correo para la interfaz.
   String get correo => usuario['mail']?.toString() ?? '';
 
+  /// Cierra el menú y navega a otra sección conservando los datos de sesión.
   void _navegar(BuildContext context, String ruta) {
     Navigator.pop(context);
     if (ruta == rutaActual) return;
@@ -23,6 +31,7 @@ class AdminDrawer extends StatelessWidget {
     );
   }
 
+  /// Dibuja la cabecera del administrador y los enlaces de navegación lateral.
   @override
   Widget build(BuildContext context) {
     return Drawer(

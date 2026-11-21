@@ -1,12 +1,17 @@
+/// Archivo: post_service.dart.
+/// Crea publicaciones, carga imágenes y obtiene el contenido del blog mediante la API.
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import '../models/post_model.dart';
 
+/// Centraliza creación, carga de fotos y consulta de publicaciones.
 class PostService {
   static const String baseUrl = 'http://127.0.0.1:8000';
 
   // Método anterior: se conserva para que el resto del proyecto siga funcionando.
+  /// Envía una publicación con texto y una ruta de imagen ya disponible.
   Future<PostModel> agregarPost({
     required String titulo,
     required String descripcion,
@@ -42,6 +47,7 @@ class PostService {
   }
 
   // Nuevo método: manda título, descripción y foto en un solo multipart/form-data.
+  /// Envía texto e imagen en una solicitud multipart y devuelve la publicación creada.
   Future<PostModel> agregarPostConFoto({
     required String titulo,
     required String descripcion,
@@ -88,6 +94,7 @@ class PostService {
     }
     final List<dynamic> datos = jsonDecode(respuesta.body);
     return datos
+        // Convierte cada elemento de la colección al tipo que consume la interfaz.
         .map((json) => PostModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }

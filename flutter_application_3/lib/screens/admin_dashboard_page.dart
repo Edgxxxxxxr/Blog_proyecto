@@ -1,3 +1,6 @@
+/// Archivo: admin_dashboard_page.dart.
+/// Construye el panel administrativo, carga sus datos y coordina las secciones de administración.
+
 // Importa los componentes visuales de Material Design.
 import 'package:flutter/material.dart';
 
@@ -21,6 +24,7 @@ part 'admin/admin_perfil_page.dart';
 part 'admin/admin_widgets.dart';
 
 // Define la pantalla principal como un widget con estado mutable.
+/// Coordina los datos de sesión, navegación y contenido del panel administrativo.
 class AdminDashboardPage extends StatefulWidget {
   // Constructor de la pantalla; acepta una clave opcional de Flutter.
   const AdminDashboardPage({super.key});
@@ -33,6 +37,7 @@ class AdminDashboardPage extends StatefulWidget {
 
 // Clase base: conserva los datos, la sesión y las funciones comunes.
 // Los módulos implementan los métodos abstractos declarados al final.
+/// Comparte el estado, las dependencias y las acciones entre secciones del panel.
 abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // Servicio de la API; permanece nulo hasta autenticar al administrador.
   AdminService? servicio;
@@ -57,6 +62,10 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   List<Map<String, dynamic>> usuarios = [];
   // Lista de reseñas devueltas por FastAPI.
   List<Map<String, dynamic>> resenas = [];
+  // Reportes que usuarios enviaron sobre reseñas.
+  List<Map<String, dynamic>> reportes = [];
+  // Alterna entre moderación general y la bandeja de reportes.
+  bool mostrarReportes = false;
 
   // Nombres de las secciones, en el orden de navegación.
   final titulos = [
@@ -93,6 +102,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // Indica que se implementa un método declarado en la clase base.
   @override
   // Recibe los argumentos de navegación cuando las dependencias están disponibles.
+  /// Actualiza los datos que dependen del contexto de la aplicación.
   void didChangeDependencies() {
     // Ejecuta primero el comportamiento heredado de Flutter.
     super.didChangeDependencies();
@@ -138,6 +148,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // =====================================
 
   // Consulta y actualiza las tres listas que usa el panel.
+  /// Consulta los datos necesarios para construir las secciones del panel.
   Future<void> cargarDatos() async {
     // No realiza peticiones si no existe un servicio autenticado.
     if (servicio == null) return;
@@ -161,6 +172,9 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
       // Consulta las reseñas mediante el servicio.
       final listaResenas = await servicio!.obtenerResenas();
 
+      // Consulta los reportes para presentarlos en la moderación.
+      final listaReportes = await servicio!.obtenerReportes();
+
       // Evita utilizar el estado si la pantalla ya fue desmontada.
       if (!mounted) return;
 
@@ -172,8 +186,10 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
         usuarios = listaUsuarios;
         // Reemplaza las reseñas locales con los datos recibidos.
         resenas = listaResenas;
+        // Reemplaza la bandeja local con los reportes recibidos.
+        reportes = listaReportes;
       });
-    // Captura una excepción para gestionar el error.
+      // Captura una excepción para gestionar el error.
     } catch (e) {
       // Comprueba que el widget sigue montado antes de utilizar su contexto.
       if (!mounted) return;
@@ -183,7 +199,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
         // Guarda el mensaje de error sin el prefijo Exception.
         error = e.toString().replaceFirst('Exception: ', '');
       });
-    // Ejecuta esta sección al terminar, incluso si hubo una excepción.
+      // Ejecuta esta sección al terminar, incluso si hubo una excepción.
     } finally {
       // Comprueba que el widget permanece montado.
       if (mounted) {
@@ -201,17 +217,19 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // =====================================
 
   // Muestra un aviso breve en la parte inferior de la pantalla.
+  /// Muestra una confirmación o error breve en la pantalla actual.
   void aviso(String mensaje) {
     // Comprueba que el widget sigue montado antes de utilizar su contexto.
     if (!mounted) return;
 
     // Obtiene el ScaffoldMessenger asociado al contexto.
     ScaffoldMessenger.of(context)
-        // Muestra el mensaje mediante un SnackBar.
-        .showSnackBar(SnackBar(content: Text(mensaje)));
+    // Muestra el mensaje mediante un SnackBar.
+    .showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
   // Cambia la sección visible del administrador.
+  /// Actualiza la sección seleccionada del panel administrativo.
   void cambiarPagina(int destino) {
     // Notifica a Flutter que debe reconstruir la pantalla con el estado nuevo.
     setState(() {
@@ -223,6 +241,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   }
 
   // Abre una confirmación y devuelve true si se acepta.
+  /// Solicita confirmación y devuelve la decisión elegida por el administrador.
   Future<bool> confirmar(String mensaje) async {
     // Abre el diálogo de confirmación y espera un booleano.
     return await showDialog<bool>(
@@ -252,7 +271,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
               ),
             ],
           ),
-        // Si el diálogo no devuelve un valor, utiliza la alternativa siguiente.
+          // Si el diálogo no devuelve un valor, utiliza la alternativa siguiente.
         ) ??
         // Considera la confirmación cancelada si el resultado es nulo.
         false;
@@ -261,6 +280,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // Ejecuta una operación de escritura y recarga los datos.
   Future<void> ejecutarOperacion(
     // Recibe una función asíncrona que realiza la operación de la API.
+    // Callback asíncrono que ejecuta el cambio solicitado en la API.
     Future<void> Function() operacion,
     // Recibe el texto que se mostrará cuando termine correctamente.
     String mensaje,
@@ -286,14 +306,14 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
       aviso(mensaje);
       // Vuelve a consultar los registros para reflejar los cambios.
       await cargarDatos();
-    // Captura una excepción para gestionar el error.
+      // Captura una excepción para gestionar el error.
     } catch (e) {
       // Comprueba que el widget sigue montado antes de utilizar su contexto.
       if (!mounted) return;
 
       // Informa del error devuelto por la operación.
       aviso(e.toString().replaceFirst('Exception: ', ''));
-    // Ejecuta esta sección al terminar, incluso si hubo una excepción.
+      // Ejecuta esta sección al terminar, incluso si hubo una excepción.
     } finally {
       // Comprueba que el widget permanece montado.
       if (mounted) {
@@ -307,6 +327,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   }
 
   // Solicita confirmación y vuelve al login.
+  /// Elimina la sesión actual y vuelve a la pantalla de acceso.
   Future<void> cerrarSesion() async {
     // Espera la respuesta del diálogo de cierre de sesión.
     final respuesta = await confirmar('¿Deseas cerrar sesión?');
@@ -328,6 +349,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // =====================================
 
   // Decide qué contenido mostrar en función del estado de la pantalla.
+  /// Selecciona y construye la vista asociada a la sección activa.
   Widget contenido() {
     // Comprueba si se están cargando los datos.
     if (cargando) {
@@ -418,6 +440,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // Indica que se implementa un método declarado en la clase base.
   @override
   // Construye la interfaz principal del administrador.
+  /// Presenta el panel, su navegación y la sección administrativa seleccionada.
   Widget build(BuildContext context) {
     // Aplica el tema visual local a esta pantalla.
     return Theme(
@@ -507,7 +530,7 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
                   if (pagina == 1) {
                     // Abre el formulario de nueva película.
                     formularioPelicula();
-                  // Alternativa cuando no se cumple la condición anterior.
+                    // Alternativa cuando no se cumple la condición anterior.
                   } else {
                     // Abre el formulario de nuevo usuario.
                     formularioUsuario();
@@ -548,7 +571,9 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
   // Campo de búsqueda compartido.
   Widget buscador(String texto);
   // Campo de texto con validación reutilizable.
-  Widget campo(TextEditingController controlador, String etiqueta, {
+  Widget campo(
+    TextEditingController controlador,
+    String etiqueta, {
     bool obligatorio = true,
     bool oculto = false,
     int lineas = 1,
@@ -558,8 +583,10 @@ abstract class _AdminDashboardBase extends State<AdminDashboardPage> {
 }
 
 // El estado final reúne todos los módulos y conserva un solo conjunto de datos.
+/// Carga la información administrativa y comparte el estado con sus secciones.
 class _AdminDashboardPageState extends _AdminDashboardBase
-    with _AdminInicio,
+    with
+        _AdminInicio,
         _AdminPeliculaForm,
         _AdminPeliculas,
         _AdminUsuarioForm,

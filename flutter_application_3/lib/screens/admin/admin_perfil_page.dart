@@ -1,3 +1,6 @@
+/// Archivo: admin_perfil_page.dart.
+/// Presenta los datos de la sesión administrativa y sus opciones de perfil.
+
 // World of Movies: Perfil y opciones de configuración.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -9,6 +12,7 @@ mixin _AdminPerfil on _AdminDashboardBase {
   // =====================================
 
   // Construye la pantalla de perfil y configuración.
+  /// Construye el perfil y las opciones de configuración del administrador.
   @override
   Widget configuracion() {
     // Usa inicialmente los datos recibidos durante el login.

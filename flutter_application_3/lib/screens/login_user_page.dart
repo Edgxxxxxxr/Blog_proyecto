@@ -1,11 +1,15 @@
+/// Archivo: login_user_page.dart.
+/// Valida las credenciales, inicia sesión y dirige a la persona según su rol.
 
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 import '../widgets/auth_background.dart';
 import '../widgets/auth_card.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/primary_button.dart';
 
+/// Presenta el acceso, valida campos y enruta a la sección correspondiente al rol.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -13,20 +17,23 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+/// Controla la validación del formulario y el envío de credenciales.
 class _LoginPageState extends State<LoginPage> {
   // Controladores de los campos
-  final TextEditingController usuarioController =
-      TextEditingController();
+  final TextEditingController usuarioController = TextEditingController();
 
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   // Servicio de autenticación con FastAPI
   final AuthService authService = AuthService();
 
   bool ocultarPassword = true;
   bool cargando = false;
+  String? _correoError;
+  String? _passwordError;
+  String? _errorGeneral;
 
+  /// Marca el ViewModel como cerrado y libera el notificador base.
   @override
   void dispose() {
     usuarioController.dispose();
@@ -38,19 +45,21 @@ class _LoginPageState extends State<LoginPage> {
   // INICIAR SESIÓN
   // ==========================================
 
+  /// Valida correo y contraseña, solicita autenticación y redirige según el rol.
   Future<void> iniciarSesion() async {
-    // Validar campos vacíos
-    final mensaje = authService.validarLogin(
-      usuario: usuarioController.text,
-      password: passwordController.text,
-    );
-
-    if (mensaje != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(mensaje)),
-      );
-      return;
-    }
+    // Presenta cada error junto al campo que la persona debe corregir.
+    setState(() {
+      _correoError = usuarioController.text.trim().isEmpty
+          ? 'Ingresa tu correo electrónico.'
+          : (!usuarioController.text.contains('@')
+                ? 'Ingresa un correo válido.'
+                : null);
+      _passwordError = passwordController.text.isEmpty
+          ? 'Ingresa tu contraseña.'
+          : null;
+      _errorGeneral = null;
+    });
+    if (_correoError != null || _passwordError != null) return;
 
     setState(() {
       cargando = true;
@@ -66,13 +75,13 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       // Obtener el rol
-      final int tipoUsuario =
-          int.parse(usuario['tip_usu'].toString());
+      final int tipoUsuario = int.parse(usuario['tip_usu'].toString());
 
       // Guardar los datos recibidos del backend,
       // incluyendo el access_token.
-      final Map<String, dynamic> datosUsuario =
-          Map<String, dynamic>.from(usuario);
+      final Map<String, dynamic> datosUsuario = Map<String, dynamic>.from(
+        usuario,
+      );
 
       // ======================================
       // REDIRECCIÓN SEGÚN EL ROL
@@ -90,29 +99,27 @@ class _LoginPageState extends State<LoginPage> {
         // USUARIO NORMAL
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/blog',
+          '/movie-home',
           (route) => false,
           arguments: datosUsuario,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'El tipo de usuario no tiene acceso asignado',
-            ),
+            content: Text('El tipo de usuario no tiene acceso asignado'),
           ),
         );
       }
     } catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-          ),
-        ),
-      );
+      final mensaje = e.toString().replaceFirst('Exception: ', '');
+      setState(() {
+        if (mensaje.toLowerCase().contains('correo o contraseña')) {
+          _passwordError = mensaje;
+        } else {
+          _errorGeneral = mensaje;
+        }
+      });
     } finally {
       if (mounted) {
         setState(() {
@@ -126,6 +133,7 @@ class _LoginPageState extends State<LoginPage> {
   // INTERFAZ DE INICIO DE SESIÓN
   // ==========================================
 
+  /// Presenta los campos de acceso y sus mensajes de validación o error.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,11 +144,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Icono
-                const Icon(
-                  Icons.lock,
-                  size: 65,
-                  color: Color(0xFFC9A227),
-                ),
+                const Icon(Icons.lock, size: 65, color: Color(0xFFC9A227)),
 
                 const SizedBox(height: 15),
 
@@ -162,6 +166,13 @@ class _LoginPageState extends State<LoginPage> {
                   label: 'Correo electrónico',
                   prefixIcon: Icons.person,
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  errorText: _correoError,
+                  onChanged: (_) {
+                    if (_correoError != null) {
+                      setState(() => _correoError = null);
+                    }
+                  },
                 ),
 
                 const SizedBox(height: 15),
@@ -172,7 +183,17 @@ class _LoginPageState extends State<LoginPage> {
                   label: 'Contraseña',
                   prefixIcon: Icons.lock_outline,
                   obscureText: ocultarPassword,
+                  autofillHints: const [AutofillHints.password],
+                  errorText: _passwordError,
+                  onChanged: (_) {
+                    if (_passwordError != null) {
+                      setState(() => _passwordError = null);
+                    }
+                  },
                   suffixIcon: IconButton(
+                    tooltip: ocultarPassword
+                        ? 'Mostrar contraseña'
+                        : 'Ocultar contraseña',
                     icon: Icon(
                       ocultarPassword
                           ? Icons.visibility_off_outlined
@@ -186,29 +207,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // Recuperar contraseña
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      '¿Olvidaste tu contraseña?',
+                if (_errorGeneral != null) ...[
+                  const SizedBox(height: 8),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _errorGeneral!,
+                      style: const TextStyle(color: Color(0xFFB3261E)),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
+                ],
 
                 const SizedBox(height: 5),
 
                 // Botón de inicio de sesión
                 PrimaryButton(
-                  text: cargando
-                      ? 'VALIDANDO...'
-                      : 'INGRESAR',
-                  onPressed: cargando
-                      ? () {}
-                      : () {
-                          iniciarSesion();
-                        },
+                  text: cargando ? 'VALIDANDO...' : 'INGRESAR',
+                  onPressed: cargando ? null : iniciarSesion,
                 ),
 
                 const SizedBox(height: 15),
@@ -220,10 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                     const Text('¿No tienes cuenta?'),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/register',
-                        );
+                        Navigator.pushNamed(context, '/register');
                       },
                       child: const Text('Registrarse'),
                     ),

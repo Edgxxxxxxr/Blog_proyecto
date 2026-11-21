@@ -1,8 +1,12 @@
+/// Archivo: profile_page.dart.
+/// Presenta y actualiza los datos del perfil de una cuenta.
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/admin_drawer.dart';
 
+/// Permite revisar y guardar los datos del perfil.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -10,6 +14,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+/// Controla los campos del perfil y guarda los cambios enviados por la persona.
 class _ProfilePageState extends State<ProfilePage> {
   static const String baseUrl = 'http://127.0.0.1:8000';
   final _formKey = GlobalKey<FormState>();
@@ -20,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _cargando = false;
   bool _inicializado = false;
 
+  /// Actualiza los datos que dependen del contexto de la aplicación.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -38,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _inicializado = true;
   }
 
+  /// Marca el ViewModel como cerrado y libera el notificador base.
   @override
   void dispose() {
     _nombre.dispose();
@@ -46,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  /// Valida el formulario y envía los cambios de la publicación o perfil.
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
     final id = _usuario['id_usr'];
@@ -88,6 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  /// Presenta los campos de perfil y la acción para guardar modificaciones.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

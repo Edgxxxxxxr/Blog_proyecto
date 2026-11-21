@@ -1,0 +1,32 @@
+# Credenciales locales: cada desarrollador crea su propio archivo .env.
+.env
+**/.env
+!**/.env.example
+
+# Entornos y archivos generados por Python.
+venv/
+.venv/
+**/venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Artefactos generados por Flutter y Dart.
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/coverage/
+
+# Respaldos locales de bases de datos con información personal.
+blog_db.sql
+**/blog_db.sql
+backend_API/uploads/
+
+# Renders temporales usados al revisar los documentos.
+docs/qa-render/
+
+# Archivos temporales del sistema.
+.DS_Store
+Thumbs.db

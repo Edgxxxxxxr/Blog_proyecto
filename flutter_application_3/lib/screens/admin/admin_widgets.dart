@@ -1,3 +1,6 @@
+/// Archivo: admin_widgets.dart.
+/// Reúne componentes visuales reutilizados por las secciones administrativas.
+
 // World of Movies: Campos, buscador, imágenes, estrellas y menú lateral.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -76,6 +79,7 @@ mixin _AdminWidgets on _AdminDashboardBase {
   // =====================================
 
   // Construye el buscador reutilizable de las secciones.
+  /// Construye el campo reutilizable para filtrar una lista.
   @override
   Widget buscador(String texto) {
     // Crea el componente Padding de la interfaz.
@@ -116,6 +120,7 @@ mixin _AdminWidgets on _AdminDashboardBase {
   // =====================================
 
   // Muestra una imagen de película o un icono alternativo.
+  /// Carga la imagen de catálogo o presenta una alternativa visual.
   @override
   Widget fotoPelicula(dynamic imagen) {
     // Normaliza la ruta de la imagen a una cadena de texto.
@@ -173,6 +178,7 @@ mixin _AdminWidgets on _AdminDashboardBase {
   // =====================================
 
   // Representa una calificación con estrellas y un número decimal.
+  /// Presenta la puntuación como estrellas y su valor numérico.
   @override
   Widget estrellas(dynamic valor) {
     // Intenta interpretar el valor como un número decimal.
@@ -237,6 +243,7 @@ mixin _AdminWidgets on _AdminDashboardBase {
   // =====================================
 
   // Construye el menú lateral de navegación.
+  /// Construye el menú y conecta sus opciones con la navegación del panel.
   @override
   Widget menuLateral() {
     // Crea el componente Drawer de la interfaz.

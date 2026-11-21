@@ -1,11 +1,16 @@
+/// Archivo: category_chip.dart.
+/// Representa una categoría como una etiqueta visual seleccionable.
+
 import 'package:flutter/material.dart';
 
+/// Representa una categoría con estados visuales de selección.
 class CategoryChip extends StatelessWidget {
 
   final String text;
   final bool selected;
   final VoidCallback onTap;
 
+  /// Crea el componente CategoryChip con los valores que necesita para funcionar.
   const CategoryChip({
     super.key,
     required this.text,
@@ -13,6 +18,7 @@ class CategoryChip extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Dibuja la etiqueta de categoría y distingue si está seleccionada.
   @override
   Widget build(BuildContext context) {
 

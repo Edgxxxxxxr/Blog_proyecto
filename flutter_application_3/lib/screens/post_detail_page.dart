@@ -1,13 +1,19 @@
+/// Archivo: post_detail_page.dart.
+/// Presenta el contenido completo de una publicación seleccionada del blog.
+
 import 'package:flutter/material.dart';
 import '../models/post_model.dart';
 import '../widgets/post_card.dart';
 
+/// Presenta una publicación completa seleccionada desde el blog.
 class PostDetailPage extends StatelessWidget {
   final PostModel post;
+  /// Crea el componente PostDetailPage con los valores que necesita para funcionar.
   const PostDetailPage({
     super.key,
     required this.post,
   });
+  /// Presenta el título, imagen y descripción completa de la publicación.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,3 +1,6 @@
+/// Archivo: admin_pelicula_form.dart.
+/// Construye y valida el formulario para crear o editar una película.
+
 // World of Movies: Formulario, selección de imagen, año, duración y guardado.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -5,6 +8,7 @@ part of '../admin_dashboard_page.dart';
 // Este mixin aporta funciones al mismo estado; no crea otra pantalla independiente.
 mixin _AdminPeliculaForm on _AdminDashboardBase {
   // Separa el año y la duración almacenados juntos en tags.
+  /// Interpreta las etiquetas de catálogo y extrae año, duración y otros datos.
   Map<String, String> separarTags(dynamic valor) {
     // Convierte el valor a texto; si es nulo, utiliza una cadena vacía.
     final texto = valor?.toString() ?? '';
@@ -34,6 +38,7 @@ mixin _AdminPeliculaForm on _AdminDashboardBase {
   // =====================================
 
   // Abre el formulario para agregar o editar una película.
+  /// Carga los datos existentes o prepara valores vacíos y guarda la película.
   @override
   Future<void> formularioPelicula([Map<String, dynamic>? pelicula]) async {
     // Distingue entre creación y edición según exista un registro.

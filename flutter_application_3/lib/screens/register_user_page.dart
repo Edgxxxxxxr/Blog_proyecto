@@ -1,3 +1,6 @@
+/// Archivo: register_user_page.dart.
+/// Valida los datos del formulario y crea una cuenta de usuario.
+
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
@@ -6,39 +9,38 @@ import '../widgets/auth_card.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/primary_button.dart';
 
+/// Presenta el registro, valida cada campo y crea una cuenta de usuario.
 class RegisterPage extends StatefulWidget {
-
-  const RegisterPage({
-    super.key,
-  });
+  const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() =>
-      _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState
-    extends State<RegisterPage> {
+/// Valida los campos y gestiona la visibilidad de las contraseñas del registro.
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController nombreController = TextEditingController();
 
-  final TextEditingController nombreController =
-      TextEditingController();
+  final TextEditingController correoController = TextEditingController();
 
-  final TextEditingController correoController =
-      TextEditingController();
-
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final TextEditingController direccionController = TextEditingController();
   final TextEditingController confirmarController = TextEditingController();
-  int tipoUsuario = 1;
   bool guardando = false;
+  bool mostrarPassword = false;
+  bool mostrarConfirmacion = false;
+  String? _nombreError;
+  String? _correoError;
+  String? _passwordError;
+  String? _confirmarError;
+  String? _errorGeneral;
 
   final AuthService authService = AuthService();
 
+  /// Marca el ViewModel como cerrado y libera el notificador base.
   @override
   void dispose() {
-
     nombreController.dispose();
     correoController.dispose();
     passwordController.dispose();
@@ -48,20 +50,36 @@ class _RegisterPageState
     super.dispose();
   }
 
+  /// Valida los datos y solicita a la API crear la cuenta.
   Future<void> registrarUsuario() async {
     if (guardando) return;
 
-    final mensaje = authService.validarRegistro(
-      nombre: nombreController.text.trim(),
-      correo: correoController.text.trim(),
-      password: passwordController.text,
-      confirmarpassword: confirmarController.text,
-    );
+    final nombre = nombreController.text.trim();
+    final correo = correoController.text.trim();
+    final password = passwordController.text;
+    final confirmacion = confirmarController.text;
+    setState(() {
+      _nombreError = nombre.isEmpty
+          ? 'Escribe tu nombre.'
+          : (nombre.length < 2
+                ? 'El nombre debe tener al menos 2 caracteres.'
+                : null);
+      _correoError = correo.isEmpty
+          ? 'Escribe tu correo electrónico.'
+          : (!correo.contains('@') ? 'Ingresa un correo válido.' : null);
+      _passwordError = password.isEmpty
+          ? 'Escribe una contraseña.'
+          : (password.length < 8 ? 'Usa al menos 8 caracteres.' : null);
+      _confirmarError = confirmacion.isEmpty
+          ? 'Confirma tu contraseña.'
+          : (password != confirmacion ? 'Las contraseñas no coinciden.' : null);
+      _errorGeneral = null;
+    });
 
-    if (mensaje != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(mensaje)),
-      );
+    if (_nombreError != null ||
+        _correoError != null ||
+        _passwordError != null ||
+        _confirmarError != null) {
       return;
     }
 
@@ -74,7 +92,7 @@ class _RegisterPageState
         direccion: direccionController.text.trim().isEmpty
             ? null
             : direccionController.text.trim(),
-        tipoUsuario: tipoUsuario,
+        tipoUsuario: 2,
       );
 
       if (!mounted) return;
@@ -86,106 +104,126 @@ class _RegisterPageState
       passwordController.clear();
       confirmarController.clear();
       direccionController.clear();
-      setState(() => tipoUsuario = 1);
+      setState(() {
+        _nombreError = null;
+        _correoError = null;
+        _passwordError = null;
+        _confirmarError = null;
+      });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo registrar: $e')),
-      );
+      final mensaje = e.toString().replaceFirst('Exception: ', '');
+      if (mensaje.toLowerCase().contains('correo')) {
+        setState(() => _correoError = mensaje);
+      } else {
+        setState(() => _errorGeneral = 'No se pudo registrar: $mensaje');
+      }
     } finally {
       if (mounted) setState(() => guardando = false);
     }
   }
 
+  /// Presenta el formulario de registro y los controles de visibilidad de contraseña.
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       body: AuthBackground(
-
         child: Center(
-
           child: AuthCard(
-
             child: Column(
-
-              mainAxisSize:
-                  MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
 
               children: [
-
                 const Icon(
                   Icons.person_add,
                   size: 65,
-                  color:
-                      Color(0xFF2196F3),
+                  color: Color(0xFF2196F3),
                 ),
 
-                const SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 15),
 
                 const Text(
                   'CREAR CUENTA',
 
                   style: TextStyle(
                     fontSize: 27,
-                    fontWeight:
-                        FontWeight.bold,
-                    color:
-                        Color(0xFF08245C),
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF08245C),
                   ),
                 ),
 
-                const SizedBox(
-                  height: 25,
-                ),
+                const SizedBox(height: 25),
 
                 CustomTextField(
-                  controller:
-                      nombreController,
+                  controller: nombreController,
 
-                  label:
-                      'Nombre completo',
+                  label: 'Nombre completo',
 
-                  prefixIcon:
-                      Icons.person,
+                  prefixIcon: Icons.person,
+                  autofillHints: const [AutofillHints.name],
+                  errorText: _nombreError,
+                  onChanged: (_) {
+                    if (_nombreError != null) {
+                      setState(() => _nombreError = null);
+                    }
+                  },
                 ),
 
-                const SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 15),
 
                 CustomTextField(
-                  controller:
-                      correoController,
+                  controller: correoController,
 
-                  label:
-                      'Correo electrónico',
+                  label: 'Correo electrónico',
 
-                  prefixIcon:
-                      Icons.email,
+                  prefixIcon: Icons.email,
 
-                  keyboardType:
-                      TextInputType.emailAddress,
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  errorText: _correoError,
+                  onChanged: (_) {
+                    if (_correoError != null) {
+                      setState(() => _correoError = null);
+                    }
+                  },
                 ),
 
-                const SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 15),
 
                 CustomTextField(
-                  controller:
-                      passwordController,
+                  controller: passwordController,
 
-                  label:
-                      'Contraseña',
+                  label: 'Contraseña',
 
-                  prefixIcon:
-                      Icons.lock,
+                  prefixIcon: Icons.lock,
 
-                  obscureText: true,
+                  obscureText: !mostrarPassword,
+                  autofillHints: const [AutofillHints.newPassword],
+                  errorText: _passwordError,
+                  onChanged: (_) {
+                    setState(() {
+                      _passwordError = null;
+                      if (confirmarController.text.isNotEmpty &&
+                          confirmarController.text != passwordController.text) {
+                        _confirmarError = 'Las contraseñas no coinciden.';
+                      }
+                    });
+                  },
+                  suffixIcon: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF4A4458),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    onPressed: () =>
+                        setState(() => mostrarPassword = !mostrarPassword),
+                    icon: Icon(
+                      mostrarPassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                    ),
+                    label: Text(mostrarPassword ? 'Ocultar' : 'Mostrar'),
+                  ),
                 ),
 
                 const SizedBox(height: 15),
@@ -194,7 +232,32 @@ class _RegisterPageState
                   controller: confirmarController,
                   label: 'Confirmar contraseña',
                   prefixIcon: Icons.lock_outline,
-                  obscureText: true,
+                  obscureText: !mostrarConfirmacion,
+                  autofillHints: const [AutofillHints.newPassword],
+                  errorText: _confirmarError,
+                  onChanged: (value) {
+                    setState(() {
+                      _confirmarError = value == passwordController.text
+                          ? null
+                          : 'Las contraseñas no coinciden.';
+                    });
+                  },
+                  suffixIcon: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF4A4458),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    onPressed: () => setState(
+                      () => mostrarConfirmacion = !mostrarConfirmacion,
+                    ),
+                    icon: Icon(
+                      mostrarConfirmacion
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                    ),
+                    label: Text(mostrarConfirmacion ? 'Ocultar' : 'Mostrar'),
+                  ),
                 ),
 
                 const SizedBox(height: 15),
@@ -203,45 +266,38 @@ class _RegisterPageState
                   controller: direccionController,
                   label: 'Dirección (opcional)',
                   prefixIcon: Icons.home,
+                  autofillHints: const [AutofillHints.streetAddressLine1],
                 ),
 
                 const SizedBox(height: 15),
 
-                DropdownButtonFormField<int>(
-                  initialValue: tipoUsuario,
-                  decoration: const InputDecoration(labelText: 'Tipo de usuario'),
-                  items: const [
-                    DropdownMenuItem(value: 1, child: Text('Administrador')),
-                    DropdownMenuItem(value: 2, child: Text('Usuario')),
-                  ],
-                  onChanged: guardando ? null : (valor) {
-                    if (valor != null) setState(() => tipoUsuario = valor);
-                  },
-                ),
-
                 const SizedBox(height: 25),
+
+                if (_errorGeneral != null) ...[
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _errorGeneral!,
+                      style: const TextStyle(color: Color(0xFFB3261E)),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
 
                 PrimaryButton(
                   text: guardando ? 'GUARDANDO...' : 'REGISTRARME',
-                  onPressed: guardando ? () {} : registrarUsuario,
+                  onPressed: guardando ? null : registrarUsuario,
                 ),
 
-                const SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 15),
 
                 TextButton(
-
                   onPressed: () {
-
-                    Navigator.pop(
-                      context,
-                    );
+                    Navigator.pop(context);
                   },
 
-                  child: const Text(
-                    'Ya tengo una cuenta',
-                  ),
+                  child: const Text('Ya tengo una cuenta'),
                 ),
               ],
             ),

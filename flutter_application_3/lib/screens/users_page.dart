@@ -1,3 +1,5 @@
+/// Archivo: users_page.dart.
+/// Administra la lista de usuarios, sus formularios y las acciones de eliminación.
 
 import 'package:flutter/material.dart';
 
@@ -5,6 +7,7 @@ import '../models/user_model.dart';
 import '../services/user_service.dart';
 import '../widgets/admin_drawer.dart';
 
+/// Administra la lista de cuentas y sus operaciones CRUD.
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
@@ -12,6 +15,7 @@ class UsersPage extends StatefulWidget {
   State<UsersPage> createState() => _UsersPageState();
 }
 
+/// Carga cuentas, abre formularios y procesa las acciones administrativas.
 class _UsersPageState extends State<UsersPage> {
   final UserService userService = UserService();
 
@@ -25,6 +29,7 @@ class _UsersPageState extends State<UsersPage> {
   Map<String, dynamic> usuarioActual = {'nom_usr': 'Usuario', 'mail': '', 'tip_usu': 1};
   bool argumentoLeido = false;
 
+  /// Actualiza los datos que dependen del contexto de la aplicación.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -42,12 +47,14 @@ class _UsersPageState extends State<UsersPage> {
     }
   }
 
+  /// Inicializa el estado y los recursos que necesita la pantalla.
   @override
   void initState() {
     super.initState();
     futuroUsuarios = userService.obtenerUsuarios();
   }
 
+  /// Marca el ViewModel como cerrado y libera el notificador base.
   @override
   void dispose() {
     nombreController.dispose();
@@ -57,12 +64,14 @@ class _UsersPageState extends State<UsersPage> {
     super.dispose();
   }
 
+  /// Actualiza la consulta de cuentas para refrescar la lista administrativa.
   void recargarUsuarios() {
     setState(() {
       futuroUsuarios = userService.obtenerUsuarios();
     });
   }
 
+  /// Muestra una notificación breve con el resultado de la acción solicitada.
   void mostrarMensaje(String mensaje) {
     if (!mounted) return;
 
@@ -71,6 +80,7 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
+  /// Abre el formulario, envía los cambios y actualiza la lista al guardar.
   Future<void> mostrarFormulario({UserModel? usuario}) async {
     final esEdicion = usuario != null;
 
@@ -256,6 +266,7 @@ class _UsersPageState extends State<UsersPage> {
     }
   }
 
+  /// Confirma y ejecuta la eliminación de eliminarUsuario.
   Future<void> eliminarUsuario(UserModel usuario) async {
     final confirmar = await showDialog<bool>(
       context: context,
@@ -291,6 +302,7 @@ class _UsersPageState extends State<UsersPage> {
     }
   }
 
+  /// Presenta la lista de cuentas y los controles para administrarlas.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

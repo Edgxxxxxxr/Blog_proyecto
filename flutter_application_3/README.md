@@ -1,17 +1,14 @@
-# flutter_application_3
+# Aplicación Flutter
 
-A new Flutter project.
+Cliente de World of Movies para navegador y dispositivos móviles. Presenta las pantallas de acceso, registro, inicio, búsqueda, detalle, favoritos, reseñas propias y perfil; las operaciones de administración se conservan en el panel correspondiente.
 
-## Getting Started
+## Ejecutar en navegador
 
-This project is a starting point for a Flutter application.
+Primero inicia la API siguiendo las instrucciones del `README.md` de la raíz. Luego, desde esta carpeta, ejecuta:
 
-A few resources to get you started if this is your first Flutter project:
+```powershell
+flutter pub get
+flutter run -d chrome
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+El cliente local consume `http://127.0.0.1:8000`. No incluyas credenciales reales en capturas de pantalla o grabaciones de la aplicación.

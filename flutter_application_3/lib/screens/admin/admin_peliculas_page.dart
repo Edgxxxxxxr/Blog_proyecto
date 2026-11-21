@@ -1,3 +1,6 @@
+/// Archivo: admin_peliculas_page.dart.
+/// Presenta el catálogo administrativo y sus acciones sobre películas.
+
 // World of Movies: Listado, búsqueda, promedio y operaciones de películas.
 // part of permite compartir imports y el estado de la pantalla principal.
 part of '../admin_dashboard_page.dart';
@@ -9,6 +12,7 @@ mixin _AdminPeliculas on _AdminDashboardBase {
   // =====================================
 
   // Calcula el promedio de las calificaciones aprobadas de una película.
+  /// Calcula el promedio de las calificaciones de una película indicada.
   double? promedioPelicula(dynamic idPelicula) {
     // Parte de las reseñas descargadas desde la API.
     final calificaciones = resenas
@@ -51,6 +55,7 @@ mixin _AdminPeliculas on _AdminDashboardBase {
   // =====================================
 
   // Construye el listado de películas con búsqueda y acciones.
+  /// Construye la tabla o lista administrativa del catálogo.
   @override
   Widget pantallaPeliculas() {
     // Filtra las películas según el texto del buscador.

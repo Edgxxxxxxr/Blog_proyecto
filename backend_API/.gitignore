@@ -1,0 +1,8 @@
+# Configuración local y secretos.
+.env
+
+# Archivos generados por Python.
+__pycache__/
+*.py[cod]
+venv/
+.venv/

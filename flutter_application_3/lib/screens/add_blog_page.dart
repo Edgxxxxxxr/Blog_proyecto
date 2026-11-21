@@ -1,9 +1,13 @@
+/// Archivo: add_blog_page.dart.
+/// Construye el formulario administrativo para crear una publicación con texto e imagen.
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/post_service.dart';
 import '../widgets/admin_drawer.dart';
 
+/// Permite preparar una publicación administrativa con una imagen opcional.
 class AddBlogPage extends StatefulWidget {
   const AddBlogPage({super.key});
 
@@ -11,6 +15,7 @@ class AddBlogPage extends StatefulWidget {
   State<AddBlogPage> createState() => _AddBlogPageState();
 }
 
+/// Mantiene los campos del formulario y prepara la imagen seleccionada.
 class _AddBlogPageState extends State<AddBlogPage> {
   final _formKey = GlobalKey<FormState>();
   final _titulo = TextEditingController();
@@ -23,6 +28,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
   bool _guardando = false;
   Map<String, dynamic> _usuario = {};
 
+  /// Actualiza los datos que dependen del contexto de la aplicación.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -32,6 +38,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     }
   }
 
+  /// Marca el ViewModel como cerrado y libera el notificador base.
   @override
   void dispose() {
     _titulo.dispose();
@@ -40,6 +47,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     super.dispose();
   }
 
+  /// Abre la fuente elegida y conserva la imagen seleccionada para subirla.
   Future<void> _elegirFoto(ImageSource origen) async {
     try {
       final imagen = await _picker.pickImage(
@@ -67,6 +75,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     }
   }
 
+  /// Valida el formulario y envía los cambios de la publicación o perfil.
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
     if (_foto == null || _imagenBytes == null) {
@@ -105,6 +114,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
     }
   }
 
+  /// Dibuja el formulario de publicación y su acción para guardar contenido.
   @override
   Widget build(BuildContext context) {
     final nombre = _usuario['nom_usr']?.toString() ?? 'Administrador';

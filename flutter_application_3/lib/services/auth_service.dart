@@ -1,10 +1,14 @@
+/// Archivo: auth_service.dart.
+/// Valida datos de acceso y se comunica con la API para registrar e identificar cuentas.
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+/// Valida credenciales y ejecuta el registro e inicio de sesión HTTP.
 class AuthService {
   static const String baseUrl = 'http://127.0.0.1:8000';
 
+  /// Valida rLogin antes de continuar.
   String? validarLogin({
     required String usuario,
     required String password,
@@ -15,6 +19,7 @@ class AuthService {
     return null;
   }
 
+  /// Valida rRegistro antes de continuar.
   String? validarRegistro({
     required String nombre,
     required String correo,
@@ -48,7 +53,7 @@ class AuthService {
     required String correo,
     required String password,
     String? direccion,
-    int tipoUsuario = 1,
+    int tipoUsuario = 2,
   }) async {
     final respuesta = await http.post(
       Uri.parse('$baseUrl/usuarios'),

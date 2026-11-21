@@ -1,7 +1,11 @@
+/// Archivo: comentario_service.dart.
+/// Consulta los comentarios disponibles en la API y los convierte a modelos locales.
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/comentario_model.dart';
 
+/// Consulta comentarios y los transforma a modelos de la aplicación.
 class ComentarioService {
   static const String baseUrl = 'http://127.0.0.1:8000';
 
@@ -17,6 +21,7 @@ class ComentarioService {
     final List<dynamic> datos = jsonDecode(respuesta.body);
 
     return datos
+        // Convierte cada elemento de la colección al tipo que consume la interfaz.
         .map(
           (json) => ComentarioModel.fromJson(
             json as Map<String, dynamic>,

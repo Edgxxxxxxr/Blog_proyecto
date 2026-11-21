@@ -1,7 +1,11 @@
+/// Archivo: post_card.dart.
+/// Presenta una publicación del blog con su imagen y un enlace al contenido.
+
 import 'package:flutter/material.dart';
 import '../models/post_model.dart';
 
 
+/// Normaliza la ruta de una imagen para que el navegador pueda cargarla.
 String obtenerUrlImagen(String? ruta) {
   const baseUrl = 'http://127.0.0.1:8000';
 
@@ -23,16 +27,19 @@ String obtenerUrlImagen(String? ruta) {
   return '$baseUrl/$imagen';
 }
 
+/// Muestra una publicación y ofrece acceso a su detalle.
 class PostCard extends StatelessWidget {
   final PostModel post;
   final VoidCallback onTap;
 
+  /// Crea el componente PostCard con los valores que necesita para funcionar.
   const PostCard({
     super.key,
     required this.post,
     required this.onTap,
   });
 
+  /// Dibuja la imagen y el resumen de una publicación con acceso al detalle.
   @override
   Widget build(BuildContext context) {
     return Card(

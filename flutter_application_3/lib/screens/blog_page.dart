@@ -1,3 +1,6 @@
+/// Archivo: blog_page.dart.
+/// Carga y presenta las publicaciones del blog con navegación al detalle de cada una.
+
 import 'package:flutter/material.dart';
 import '../models/post_model.dart';
 import '../services/post_service.dart';
@@ -5,6 +8,7 @@ import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
 import '../widgets/admin_drawer.dart';
 
+/// Carga las publicaciones y presenta su lista con estados de carga y error.
 class BlogPage extends StatefulWidget {
   const BlogPage({super.key});
 
@@ -12,6 +16,7 @@ class BlogPage extends StatefulWidget {
   State<BlogPage> createState() => _BlogPageState();
 }
 
+/// Controla la carga de publicaciones y abre el detalle seleccionado.
 class _BlogPageState extends State<BlogPage> {
   final PostService postService = PostService();
   late Future<List<PostModel>> futurePosts;
@@ -19,6 +24,7 @@ class _BlogPageState extends State<BlogPage> {
   Map<String, dynamic> usuarioActual = {'nom_usr': 'Usuario', 'mail': '', 'tip_usu': 2};
   bool argumentoLeido = false;
 
+  /// Actualiza los datos que dependen del contexto de la aplicación.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -38,18 +44,21 @@ class _BlogPageState extends State<BlogPage> {
     }
   }
 
+  /// Inicializa el estado y los recursos que necesita la pantalla.
   @override
   void initState() {
     super.initState();
     futurePosts = postService.obtenerPosts();
   }
 
+  /// Vuelve a solicitar las publicaciones y reconstruye la lista al terminar.
   void recargarPosts() {
     setState(() {
       futurePosts = postService.obtenerPosts();
     });
   }
 
+  /// Presenta las publicaciones y sus estados de carga, error o lista vacía.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,6 +152,7 @@ class _BlogPageState extends State<BlogPage> {
                 ),
               ),
               const SizedBox(height: 20),
+              // Crea una tarjeta de navegación para cada publicación recibida.
               ...posts.map(
                 (post) => PostCard(
                   post: post,
