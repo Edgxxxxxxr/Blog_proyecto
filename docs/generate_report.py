@@ -589,7 +589,7 @@ if query:
     doc.add_heading("5. Reflexión del proceso", level=1)
     paragraph(doc, "Al integrar las funciones de usuario con una API que ya atendía administración, fue necesario conservar las tablas y los nombres de columnas existentes. La separación entre pantallas, ViewModels, repositorios, servicios y rutas facilita ubicar cada cambio y reduce el acoplamiento entre interfaz y base de datos.")
     paragraph(doc, "El modelo reutiliza comentarios para representar reseñas y mantiene las películas en blog, mientras favoritos y reportes tienen tablas propias con restricciones de integridad. Esta decisión mantiene compatibilidad con el panel y permite que las operaciones del usuario se persistan en las mismas tablas que consulta la administración.")
-    paragraph(doc, "Para entregar el proyecto, se añadieron scripts SQL sin datos personales, instrucciones de instalación y un guion para la demostración. La presentación local debe mostrar el recorrido completo de una operación y su resultado en la vista administrativa; el video se grabará aparte siguiendo el guion incluido en docs.")
+    paragraph(doc, "Para entregar el proyecto, se añadieron scripts SQL sin datos personales e instrucciones de instalación. La presentación local debe mostrar el recorrido completo de una operación y su resultado en la vista administrativa; el equipo grabará aparte el video solicitado.")
 
     doc.add_heading("Orden de ejecución", level=2)
     paragraph(doc, "MySQL debe estar disponible antes de iniciar FastAPI. Con la API activa, Flutter puede autenticarse y consultar los datos que se muestran en pantalla.")
@@ -602,7 +602,7 @@ if query:
     add_hyperlink(p, "github.com/Edgxxxxxxr/Blog_proyecto", "https://github.com/Edgxxxxxxr/Blog_proyecto")
     paragraph(doc, "Modelo de datos y migraciones: backend_API/migrations/000_base_schema.sql y 001_user_features.sql.")
     paragraph(doc, "Instrucciones de instalación y uso: README.md en la raíz del repositorio.")
-    paragraph(doc, "Demostración en video: guion de recorrido en docs/guion_video_demo.md.")
+    paragraph(doc, "Video de demostración: lo preparará y entregará el equipo.")
 
     doc.core_properties.title = "Reporte digital del proyecto World of Movies"
     doc.core_properties.subject = "Evaluación Unidad 3: Flutter, FastAPI y MySQL"

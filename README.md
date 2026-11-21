@@ -21,7 +21,7 @@ cd Blog_proyecto
 Proyecto_App_movil/
 ├── backend_API/                 # API FastAPI, modelos, servicios y migraciones
 ├── flutter_application_3/       # Aplicación Flutter para móvil y navegador
-├── docs/                        # Reporte técnico y guion de demostración
+├── docs/                        # Reporte técnico
 └── README.md                    # Estas instrucciones
 ```
 
@@ -89,6 +89,3 @@ No uses la contraseña ni el correo real de una cuenta en capturas o videos púb
 - Cada desarrollador debe conservar su `.env` local. El `.gitignore` excluye ese archivo y los entornos generados.
 - `backend_API/migrations/000_base_schema.sql` crea únicamente las tablas, sin filas de cuentas o contenido.
 
-## Evidencia de demostración
-
-El reporte digital está en `docs/Reporte_Digital_World_of_Movies.docx` y `docs/Reporte_Digital_World_of_Movies.pdf`. Para grabar la demostración, sigue `docs/guion_video_demo.md`: muestra el catálogo y sus operaciones, y termina verificando la reseña o el reporte en el panel administrativo. Usa una cuenta de prueba y no muestres `.env`, contraseñas ni datos personales.
