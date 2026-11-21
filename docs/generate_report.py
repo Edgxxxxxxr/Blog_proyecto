@@ -123,6 +123,93 @@ def build_er_diagram(path: Path):
     image.save(path)
 
 
+def build_use_case_diagram(path: Path):
+    """Dibuja las funciones principales según el rol que usa la aplicación."""
+    image = Image.new("RGB", (1800, 900), "white")
+    draw = ImageDraw.Draw(image)
+    draw.text((60, 34), "Casos de uso por tipo de cuenta", fill=f"#{NAVY}", font=font(36, True))
+    draw.rounded_rectangle((400, 120, 1400, 805), radius=30, fill=f"#{PALE}", outline=f"#{GRID}", width=4)
+    draw.text((455, 145), "World of Movies", fill=f"#{NAVY}", font=font(30, True))
+    draw_box(draw, (55, 340, 335, 570), "Usuario", ["Cuenta autenticada", "Consulta catálogo", "Interactúa con reseñas"], width=4)
+    draw_box(draw, (1465, 340, 1745, 570), "Administrador", ["Cuenta con rol 1", "Gestiona contenido", "Modera reportes"], width=4)
+    actions = [
+        (500, 245, 870, 370, "Explorar", ["Inicio · búsqueda · detalle"]),
+        (935, 245, 1300, 370, "Cuenta", ["Perfil · reseñas propias"]),
+        (500, 470, 870, 595, "Participar", ["Favoritos · calificación · reseña"]),
+        (935, 470, 1300, 595, "Reportar", ["Enviar reseña a moderación"]),
+        (720, 655, 1080, 770, "Administrar", ["Cuentas · películas · reportes"]),
+    ]
+    for x1, y1, x2, y2, title, lines in actions:
+        draw_box(draw, (x1, y1, x2, y2), title, lines, width=3)
+    arrow(draw, [(335, 390), (420, 310), (500, 310)])
+    arrow(draw, [(335, 440), (430, 530), (500, 530)])
+    arrow(draw, [(335, 475), (600, 715), (720, 715)])
+    arrow(draw, [(1465, 455), (1385, 715), (1080, 715)])
+    draw.text((60, 835), "Las acciones de administración requieren sesión y autorización con rol administrativo.", fill=f"#{MUTED}", font=font(22))
+    image.save(path)
+
+
+def build_review_sequence_diagram(path: Path):
+    """Dibuja el intercambio desde una reseña hasta su revisión administrativa."""
+    image = Image.new("RGB", (1800, 1120), "white")
+    draw = ImageDraw.Draw(image)
+    draw.text((60, 34), "Secuencia de una reseña y su reporte", fill=f"#{NAVY}", font=font(36, True))
+    lanes = [
+        (70, 160, 360, 300, "Usuario", ["Flutter app"]),
+        (425, 160, 715, 300, "API", ["FastAPI"]),
+        (780, 160, 1070, 300, "Servicios", ["Reglas de negocio"]),
+        (1135, 160, 1425, 300, "MySQL", ["comentarios · reportes"]),
+        (1490, 160, 1730, 300, "Admin", ["Panel moderación"]),
+    ]
+    centers=[]
+    for x1,y1,x2,y2,title,lines in lanes:
+        draw_box(draw,(x1,y1,x2,y2),title,lines,width=3)
+        centers.append((x1+x2)//2)
+    for x in centers:
+        draw.line((x,300,x,1025),fill=f"#{GRID}",width=3)
+    messages=[
+        (350,425,"1. Envía reseña",False),
+        (715,780,"2. Valida sesión y datos",False),
+        (1070,1135,"3. Guarda comentario",False),
+        (1135,1070,"4. Devuelve confirmación",True),
+        (350,425,"5. Envía reporte",False),
+        (715,780,"6. Verifica reseña",False),
+        (1070,1135,"7. Registra pendiente",False),
+        (1135,1490,"8. Aparece en bandeja",False),
+        (1490,1135,"9. Admin resuelve",False),
+        (1135,350,"10. Actualiza estatus",False),
+    ]
+    ys=[360,415,470,525,620,675,730,785,865,920]
+    for (start,end,label,reverse),y in zip(messages,ys):
+        line=draw.line((start,y,end,y),fill=f"#{BLUE}",width=4)
+        direction=-1 if end<start else 1
+        head=[(end,y),(end-direction*18,y-11),(end-direction*18,y+11)]
+        draw.polygon(head,fill=f"#{BLUE}")
+        draw.text((min(start,end)+8,y-29),label,fill=f"#{MUTED}",font=font(17,True))
+    draw.text((60, 1050), "La bandeja administrativa lee el estado del reporte persistido; no se envía como mensaje externo.", fill=f"#{MUTED}", font=font(21))
+    image.save(path)
+
+
+def build_startup_flow(path: Path):
+    """Resume el orden de arranque local de MySQL, API y aplicación Flutter."""
+    image = Image.new("RGB", (1800, 560), "white")
+    draw = ImageDraw.Draw(image)
+    draw.text((60, 34), "Orden para ejecutar la solución", fill=f"#{NAVY}", font=font(36, True))
+    nodes = [
+        (75, 175, 520, 420, "1 · MySQL", ["Crea la base", "Aplica las migraciones", "Guarda los datos"]),
+        (675, 175, 1120, 420, "2 · FastAPI", ["Carga .env", "Valida la sesión", "Consulta MySQL"]),
+        (1275, 175, 1720, 420, "3 · Flutter", ["Inicia sesión", "Consulta la API", "Muestra los cambios"]),
+    ]
+    for box in nodes:
+        draw_box(draw, box[:4], box[4], box[5], width=4)
+    arrow(draw, [(520, 300), (675, 300)])
+    arrow(draw, [(1120, 300), (1275, 300)])
+    draw.text((560, 254), "conexión", fill=f"#{MUTED}", font=font(18, True))
+    draw.text((1160, 254), "HTTP / JSON", fill=f"#{MUTED}", font=font(18, True))
+    draw.text((75, 475), "Secuencia local documentada en el README raíz del repositorio.", fill=f"#{MUTED}", font=font(21))
+    image.save(path)
+
+
 def shade(cell, fill):
     tc_pr = cell._tc.get_or_add_tcPr()
     shd = OxmlElement("w:shd")
@@ -261,7 +348,7 @@ def configure_styles(doc):
         style.font.name = "Arial"
         style.font.size = Pt(size)
         style.font.bold = True
-        style.font.color.rgb = RGBColor.from_string("000000")
+        style.font.color.rgb = RGBColor.from_string(NAVY if name != "Heading 2" else BLUE)
         style.paragraph_format.keep_with_next = True
         style.paragraph_format.space_before = Pt(10 if name != "Title" else 0)
         style.paragraph_format.space_after = Pt(7)
@@ -291,8 +378,14 @@ def build_report():
     ASSETS.mkdir(parents=True, exist_ok=True)
     class_image = ASSETS / "diagrama_clases_capas.png"
     er_image = ASSETS / "modelo_datos.png"
+    use_case_image = ASSETS / "casos_de_uso.png"
+    sequence_image = ASSETS / "secuencia_resena_reporte.png"
+    startup_image = ASSETS / "flujo_arranque.png"
     build_class_diagram(class_image)
     build_er_diagram(er_image)
+    build_use_case_diagram(use_case_image)
+    build_review_sequence_diagram(sequence_image)
+    build_startup_flow(startup_image)
 
     doc = Document()
     configure_styles(doc)
@@ -372,13 +465,18 @@ def build_report():
             cells[j].text = value
     style_table(t, widths=[1.15, 3.15, 2.1])
 
+    doc.add_heading("Casos de uso por tipo de cuenta", level=2)
+    paragraph(doc, "El diagrama separa las acciones del usuario de las tareas administrativas. La app ofrece consulta e interacción con el catálogo; el panel permite mantener cuentas, películas y atender reportes.")
+    add_picture(doc, use_case_image, 6.85, "Diagrama de casos de uso para una cuenta de usuario y una cuenta administradora.")
+    add_caption(doc, "Figura 2. Funciones disponibles según el rol de la cuenta.")
+
     doc.add_page_break()
 
     # 2. Modelo de datos
     doc.add_heading("2. Modelo de datos", level=1)
     paragraph(doc, "El esquema parte de usuario, blog y comentarios, y agrega favoritos y reportes_resena. La columna blog.es_pelicula distingue las películas que se presentan en el catálogo sin duplicar el contenido que ya administra el panel. Una reseña se almacena como un comentario con calificacion; el valor puede ser nulo para comentarios antiguos.")
     add_picture(doc, er_image, 6.9, "Diagrama entidad-relación de usuario, blog, comentarios, favoritos y reportes de reseña.")
-    add_caption(doc, "Figura 2. Entidades, claves primarias, foráneas y cardinalidades.")
+    add_caption(doc, "Figura 3. Entidades, claves primarias, foráneas y cardinalidades.")
 
     t = doc.add_table(rows=1, cols=3)
     for j, title in enumerate(["Tabla", "Datos clave", "Relaciones y reglas"]):
@@ -420,6 +518,12 @@ def build_report():
 
     doc.add_heading("Ruta de una consulta del catálogo", level=2)
     paragraph(doc, "La pantalla solicita películas a través del servicio HTTP y adjunta el token de sesión. FastAPI valida ese token, delega la operación al servicio de dominio, y el repositorio consulta únicamente registros marcados como película. El servicio completa promedio, cantidad de reseñas y estado de favorito antes de devolver el JSON.")
+    doc.add_heading("Secuencia de reseña y moderación", level=2)
+    paragraph(doc, "Al publicar una reseña, la API la guarda asociada al usuario y a la película. Si otro usuario la reporta, el reporte queda pendiente en MySQL y aparece en el panel para que administración lo resuelva.")
+    add_picture(doc, sequence_image, 6.85, "Diagrama de secuencia para guardar una reseña, reportarla y moderar el reporte.")
+    add_caption(doc, "Figura 4. Intercambio entre la app, FastAPI, servicios, MySQL y administración.")
+    doc.add_page_break()
+    doc.add_heading("Evidencia de acceso a datos", level=2)
     add_code(doc, """Flutter - movie_service.dart
 final response = await http.get(
   Uri.parse('$_baseUrl/peliculas'),
@@ -439,7 +543,7 @@ if query:
     paragraph(doc, "La captura compartida es parcial: muestra una parte de la tarjeta de una película y la navegación inferior. El código anterior documenta el recorrido entre Flutter, FastAPI y MySQL; agrega en tu entrega final una captura completa donde se vea el catálogo cargado.")
     if APP_CAPTURE.exists():
         add_picture(doc, APP_CAPTURE, 6.85, "Captura parcial compartida: tarjeta de película con cartel y duración junto a la navegación inferior.")
-        add_caption(doc, "Figura 3. Vista de inicio con información de película y navegación del usuario.")
+        add_caption(doc, "Figura 5. Vista de inicio con información de película y navegación del usuario.")
     else:
         paragraph(doc, "Inserta aquí una captura de la app en Inicio donde se vea una película cargada desde la API.")
 
@@ -486,6 +590,11 @@ if query:
     paragraph(doc, "Al integrar las funciones de usuario con una API que ya atendía administración, fue necesario conservar las tablas y los nombres de columnas existentes. La separación entre pantallas, ViewModels, repositorios, servicios y rutas facilita ubicar cada cambio y reduce el acoplamiento entre interfaz y base de datos.")
     paragraph(doc, "El modelo reutiliza comentarios para representar reseñas y mantiene las películas en blog, mientras favoritos y reportes tienen tablas propias con restricciones de integridad. Esta decisión mantiene compatibilidad con el panel y permite que las operaciones del usuario se persistan en las mismas tablas que consulta la administración.")
     paragraph(doc, "Para entregar el proyecto, se añadieron scripts SQL sin datos personales, instrucciones de instalación y un guion para la demostración. La presentación local debe mostrar el recorrido completo de una operación y su resultado en la vista administrativa; el video se grabará aparte siguiendo el guion incluido en docs.")
+
+    doc.add_heading("Orden de ejecución", level=2)
+    paragraph(doc, "MySQL debe estar disponible antes de iniciar FastAPI. Con la API activa, Flutter puede autenticarse y consultar los datos que se muestran en pantalla.")
+    add_picture(doc, startup_image, 6.85, "Diagrama de arranque local: MySQL, FastAPI y cliente Flutter.")
+    add_caption(doc, "Figura 6. Dependencias para ejecutar la app y comprobar el acceso a datos.")
 
     doc.add_heading("Archivos de entrega", level=2)
     p = doc.add_paragraph()
